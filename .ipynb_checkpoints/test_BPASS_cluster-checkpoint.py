@@ -2,10 +2,12 @@ import pytest
 from spisea import synthetic
 import loading_jlu_file
 from loading_jlu_file import load_klf_by_radius
-from spisea import imf, ifmr
+from spisea import imf
+from spisea import ifmr
 import numpy as np
 from pytest import approx
 import math
+import matplotlib.pyplot as plt
 
 def test_third_figure_tests():
     """ In this test I will try to make sure that
@@ -51,6 +53,9 @@ def test_third_figure_tests():
             [np.where((MIST_Cluster.star_systems['isWR'] == 0))[0]])
     totl_BPASS = (BPASS_Cluster.star_systems['m_nirc2_Kp']
                [np.where((~BPASS_Cluster.star_systems['isWR']))[0]])
+    mist_scale = ((17000 /
+                   MIST_Cluster.star_systems['systemMass'].sum()) /
+                  area)
     weightsMST = np.array([1.0 for x in totl_mist])
     weightsMST *= mist_scale
     weightsBPS = np.array([1.0 for x in totl_BPASS])
@@ -120,12 +125,12 @@ def test_second_figure_BPASS():
                                    math.log10(0.1),
                                    recomp=True)
     clus_1 = synthetic.Cluster_w_Binaries(iso1,
-                                      imf.IMFSalpeter1955(multiplicity=
-                                                          multiplicity.
+                                      imf.imf.IMFSalpeter1955(multiplicity=
+                                                          imf.multiplicity.
                                                           MultiplicityResolvedDK()),
                                       200000, ifmr=ifmr.IFMR_Spera15())
     clus_2 = synthetic.ResolvedCluster(iso2,
-                                       imf.IMFSalpeter1955(multiplicity=
+                                       imf.imf.IMFSalpeter1955(multiplicity=
                                                            multiplicity.
                                                            MultiplicityResolvedDK()),
                                        200000, ifmr=ifmr.IFMR_Spera15())
@@ -153,7 +158,7 @@ def test_second_figure_BPASS():
     plt.legend()
     py.savefig('Comparing_BPASS_Current_Mass_Dist_w_MIST.png')
     
-def test_figure_figure_BPASS():
+def test_figure_uno_BPASS():
     """ In this test, I will be running the plotting code comparing BPASS
     and SPISEA codes. The BPASS and SPISEA isochrones are 10^8.2 years old and
     have solar metallicity. I will also check if the supposed helium stars seem
@@ -225,8 +230,8 @@ def test_isochrones_dim_stars():
     assert all(dim_singles['Teff'] < 2000)
     assert all(dim_secondaries['Teff'] < 2000)
     assert all(dim_prims['mass'] < 1.0)
-    assert all(dim_singles['Teff'] < 1.0)
-    assert all(dim_secondaries['Teff'] < 1.0)
+    assert all(dim_singles['mass'] < 1.0)
+    assert all(dim_secondaries['mass'] < 1.0)
 
 def test_cluster_massses():
     """ In this test, I will check whether the very dim (in V-band)
@@ -255,8 +260,8 @@ def test_cluster_massses():
     assert all(dim_singles['Teff'] < 2000)
     assert all(dim_secondaries['Teff'] < 2000)
     assert all(dim_prims['mass'] < 1.0)
-    assert all(dim_singles['Teff'] < 1.0)
-    assert all(dim_secondaries['Teff'] < 1.0)
+    assert all(dim_singles['mass'] < 1.0)
+    assert all(dim_secondaries['mass'] < 1.0)
 
 def test_cluster_mass_vs_expected():
     # Check if the evolution class works fine
@@ -269,12 +274,12 @@ def test_cluster_mass_vs_expected():
                                    math.log10(0.1),
                                    recomp=True)
     clus_1 = synthetic.Cluster_w_Binaries(iso1,
-                                          imf.IMFSalpeter1955(multiplicity=
+                                          imf.imf.IMFSalpeter1955(multiplicity=
                                                           multiplicity.
                                                           MultiplicityResolvedDK()),
                                       200000, ifmr=ifmr.IFMR_Spera15())
     clus_2 = synthetic.ResolvedCluster(iso2,
-                                       imf.IMFSalpeter1955(multiplicity=
+                                       imf.imf.IMFSalpeter1955(multiplicity=
                                                            multiplicity.
                                                            MultiplicityResolvedDK()),
                                        200000, ifmr=ifmr.IFMR_Spera15())
